@@ -52,3 +52,6 @@ function redirectToYouTube(courseId) {
   
   return youtubeLinks[courseId] || "https://www.youtube.com";  // Default to YouTube if course is not found
 }
+function doGet(e) {
+  return HtmlService.createHtmlOutputFromFile('login'); // <-- Load login page
+}
