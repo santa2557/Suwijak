@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Product Store</title>
+    <style>
+      body { font-family: Arial, sans-serif; text-align: center; }
+      button { padding: 10px 20px; background-color: #4285f4; color: white; border: none; cursor: pointer; }
+      button:hover { background-color: #357ae8; }
+      #qrContainer { margin-top: 20px; }
+    </style>
+  </head>
+  <body>
+    <h2>Product Store</h2>
+    <div id="productList"></div> <!-- Product list will be populated here -->
+    <div id="qrContainer"></div> <!-- QR Code for payment will appear here -->
+
+    <script>
+      function buyProduct(courseId, price) {
+        google.script.run.withSuccessHandler(function(paymentQRCode) {
+          // Display the QR code for payment
+          document.getElementById('qrContainer').innerHTML = '<h3>Scan to Pay</h3><img src="' + paymentQRCode + '" />';
+          
+          // After payment, redirect to YouTube
+          setTimeout(function() {
+            window.location.href = google.script.run.redirectToYouTube(courseId);
+          }, 5000);  // Redirect after 5 seconds (simulating payment time)
+        }).generatePaymentQR(courseId, price);  // Generate the QR code for payment
+      }
+
+      // Fetch products (courses) from the sheet
+      google.script.run.withSuccessHandler(function(products) {
+        const productList = products.map(product => {
+          return `
+            <div>
+              <h3>${product.name} - ฿${product.price}</h3>
+              <p>${product.description}</p>
+              <button onclick="buyProduct('${product.id}', '${product.price}')">Buy Now</button>
+            </div>
+          `;
+        }).join('');
+        document.getElementById('productList').innerHTML = productList;
+      }).getProductsFromSheet();
+    </script>
+  </body>
+</html>
